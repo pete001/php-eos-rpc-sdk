@@ -1,0 +1,7 @@
+vendor
+.DS_Store
+.idea/
+.env
+.php_cs.cache
+tests/coverage
+tests/static
