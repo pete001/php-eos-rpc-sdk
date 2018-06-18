@@ -2,12 +2,12 @@
 
 namespace BlockMatrix\EosRpc;
 
-use BlockMatrix\EosRpc\Adapter\Http\GuzzleAdapter;
+use BlockMatrix\EosRpc\Adapter\Http\CurlAdapter;
 use BlockMatrix\EosRpc\Adapter\Http\HttpInterface;
 use BlockMatrix\EosRpc\Adapter\Settings\DotenvAdapter;
 use BlockMatrix\EosRpc\Adapter\Settings\SettingsInterface;
 use Dotenv\Dotenv;
-use GuzzleHttp\Client;
+use Curl\Curl;
 
 /**
  * Class ChainFactory
@@ -28,7 +28,7 @@ class ChainFactory
     public function api(string $env = '.env', SettingsInterface $settings = null, HttpInterface $http = null): ChainController
     {
         $settings = $settings ?? new DotenvAdapter(new Dotenv(dirname(__DIR__), $env));
-        $http = $http ?? new GuzzleAdapter(new Client);
+        $http = $http ?? new CurlAdapter(new Curl);
 
         return new ChainController(
             $settings,

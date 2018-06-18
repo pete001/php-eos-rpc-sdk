@@ -50,7 +50,7 @@ class ChainController
      */
     protected function buildUrl($endpoint): string
     {
-        return $this->settings->rpcNode() . '/' . $this->version . '/' . $endpoint;
+        return $this->settings->rpcNode() . '/' . $this->version . $endpoint;
     }
 
     /**
@@ -61,5 +61,20 @@ class ChainController
     public function getInfo()
     {
         return $this->client->get($this->buildUrl('/chain/get_info'));
+    }
+
+    /**
+     * Get information related to a block
+     *
+     * string $id Block num or id
+     *
+     * @return string
+     */
+    public function getBlock($id)
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_block'),
+            ['block_num_or_id' => $id]
+        );
     }
 }
