@@ -1,5 +1,5 @@
 {
-    "name": "BlockMatrixNetwork/php-eos-rpc-sdk",
+    "name": "block-matrix-network/php-eos-rpc-sdk",
     "description": "PHP SDK for the EOS RPC API",
     "type": "library",
     "keywords": ["php","eos","rpc","sdk","api","crypto","blockchain","ghostbusters"],
