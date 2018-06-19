@@ -1,6 +1,6 @@
 # The PHP SDK for the EOS RPC API
 
-This is is a work in progress, the intention is to wrap the Chain API in a PHP SDK.
+A PHP wrapper for the EOS Chain RPC API.
 
 ## Background
 
