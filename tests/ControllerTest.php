@@ -1,13 +1,13 @@
 <?php
 
-use BlockMatrix\EosRpc\Adapter\Http\GuzzleAdapter;
 use BlockMatrix\EosRpc\Adapter\Http\CurlAdapter;
+use BlockMatrix\EosRpc\Adapter\Http\GuzzleAdapter;
 use BlockMatrix\EosRpc\Adapter\Settings\DotenvAdapter;
 use BlockMatrix\EosRpc\ChainController;
 use BlockMatrix\EosRpc\Exception\HttpException;
+use Curl\Curl;
 use Dotenv\Dotenv;
 use GuzzleHttp\Client;
-use Curl\Curl;
 use Mockery as m;
 
 class ControllerTest extends PHPUnit_Framework_TestCase
