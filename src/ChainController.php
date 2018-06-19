@@ -58,7 +58,7 @@ class ChainController
      *
      * @return string
      */
-    public function getInfo()
+    public function getInfo(): string
     {
         return $this->client->get($this->buildUrl('/chain/get_info'));
     }
@@ -66,15 +66,30 @@ class ChainController
     /**
      * Get information related to a block
      *
-     * string $id Block num or id
+     * mixed $id Block num or id
      *
      * @return string
      */
-    public function getBlock($id)
+    public function getBlock($id): string
     {
         return $this->client->post(
             $this->buildUrl('/chain/get_block'),
             ['block_num_or_id' => $id]
+        );
+    }
+
+    /**
+     * Get information related to an account
+     *
+     * string $name Account name
+     *
+     * @return string
+     */
+    public function getAccount(string $name): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_account'),
+            ['account_name' => $name]
         );
     }
 }

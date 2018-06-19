@@ -4,6 +4,6 @@ require_once '../vendor/autoload.php';
 
 $api = (new \BlockMatrix\EosRpc\ChainFactory)->api();
 
-$info = $api->getBlock("1337");
+echo $api->getBlock("1337") . PHP_EOL;
+echo $api->getAccount("blockmatrix1") . PHP_EOL;
 
-print_r($info);
