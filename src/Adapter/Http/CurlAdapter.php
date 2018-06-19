@@ -25,7 +25,6 @@ class CurlAdapter implements HttpInterface
     public function __construct(Curl $client)
     {
         $this->client = $client;
-        $this->client->setDefaultJsonDecoder(true);
     }
 
     /**
@@ -45,7 +44,7 @@ class CurlAdapter implements HttpInterface
             throw new HttpException("GET Request failed: {$t->getMessage()}");
         }
 
-        return json_encode($this->client->response);
+        return json_encode($this->client->response, JSON_PRETTY_PRINT);
     }
 
     /**
@@ -66,6 +65,6 @@ class CurlAdapter implements HttpInterface
             throw new HttpException("POST Request failed: {$t->getMessage()}");
         }
 
-        return json_encode($this->client->response);
+        return json_encode($this->client->response, JSON_PRETTY_PRINT);
     }
 }

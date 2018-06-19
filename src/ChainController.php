@@ -68,12 +68,29 @@ class ChainController
      *
      * mixed $id Block num or id
      *
+     * @param  mixed  $id
      * @return string
      */
     public function getBlock($id): string
     {
         return $this->client->post(
             $this->buildUrl('/chain/get_block'),
+            ['block_num_or_id' => $id]
+        );
+    }
+
+    /**
+     * Get information related to a block header state
+     *
+     * mixed $id Block num or id
+     *
+     * @param  mixed  $id
+     * @return string
+     */
+    public function getBlockHeaderState($id): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_block_header_state'),
             ['block_num_or_id' => $id]
         );
     }
@@ -89,6 +106,21 @@ class ChainController
     {
         return $this->client->post(
             $this->buildUrl('/chain/get_account'),
+            ['account_name' => $name]
+        );
+    }
+
+    /**
+     * Get account abi
+     *
+     * string $name Account name
+     *
+     * @return string
+     */
+    public function getAbi(string $name): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_abi'),
             ['account_name' => $name]
         );
     }
@@ -111,20 +143,123 @@ class ChainController
     /**
      * Fetch smart contract data from an account
      *
-     * string $name Name
+     * @param string $scope
+     * @param string $code
+     * @param string $table
+     * @param array  $extra An optional array of additional parameters to add, such as `limit`
      *
      * @return string
      */
-    public function getTableRows(string $scope, string $code, string $table, int $limit = 0): string
+    public function getTableRows(string $scope, string $code, string $table, array $extra = []): string
     {
         return $this->client->post(
             $this->buildUrl('/chain/get_table_rows'),
             [
                 'scope' => $scope,
-                'code' => $code,
+                'code'  => $code,
                 'table' => $table,
-                'limit' => $limit,
-                'json' => true,
+                'json'  => true,
+            ] + $extra
+        );
+    }
+
+    /**
+     * Get the currency balance for a defined account
+     *
+     * @param string      $code
+     * @param string      $account
+     * @param null|string $symbol  Optional filter currency symbol
+     *
+     * @return string
+     */
+    public function getCurrencyBalance(string $code, string $account, ?string $symbol = null): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_currency_balance'),
+            [
+                'code'    => $code,
+                'account' => $account,
+            ] + ($symbol ? ['symbol' => $symbol] : [])
+        );
+    }
+
+    /**
+     * Get currency stats
+     *
+     * @param string $code
+     * @param string $symbol
+     *
+     * @return string
+     */
+    public function getCurrencyStats(string $code, string $symbol): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_currency_stats'),
+            [
+                'code'   => $code,
+                'symbol' => $symbol,
+            ]
+        );
+    }
+
+    /**
+     * Get registered producers
+     *
+     * @param int         $limit      Optional pagination limit
+     * @param string|null $lowerBound Optional producer account name to control pagination
+     *
+     * @return string
+     */
+    public function getProducers(int $limit = 10, ?string $lowerBound = null): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_producers'),
+            [
+                'limit'       => $limit,
+                'json'        => true,
+            ] + ($lowerBound ? ['lower_bound' => $lowerBound] : [])
+        );
+    }
+
+    /**
+     * Serialize json to binary hex
+     * The resulting binary hex is usually used for the data field in push_transaction
+     *
+     * @param string $code
+     * @param string $action
+     * @param array  $args
+     *
+     * @return string
+     */
+    public function abiJsonToBin(string $code, string $action, array $args): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/abi_json_to_bin'),
+            [
+                'code'   => $code,
+                'action' => $action,
+                'args'   => $args,
+            ]
+        );
+    }
+
+    /**
+     * Serialize back binary hex to json
+     *
+     * @param string $code
+     * @param string $action
+     * @param string $binArgs
+     *
+     * @return string
+     */
+    public function abiBinToJson(string $code, string $action, string $binArgs): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/abi_bin_to_json'),
+            [
+                'code'    => $code,
+                'action'  => $action,
+                'binargs' => $binArgs,
             ]
         );
     }

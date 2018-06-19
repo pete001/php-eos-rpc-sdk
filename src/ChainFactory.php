@@ -6,8 +6,8 @@ use BlockMatrix\EosRpc\Adapter\Http\CurlAdapter;
 use BlockMatrix\EosRpc\Adapter\Http\HttpInterface;
 use BlockMatrix\EosRpc\Adapter\Settings\DotenvAdapter;
 use BlockMatrix\EosRpc\Adapter\Settings\SettingsInterface;
-use Dotenv\Dotenv;
 use Curl\Curl;
+use Dotenv\Dotenv;
 
 /**
  * Class ChainFactory
