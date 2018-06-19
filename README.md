@@ -11,7 +11,7 @@ docs use outdated syntax `(╯°□°）╯︵ ┻━┻`
 ## Installing
 
 ```php
-composer require BlockMatrixNetwork/php-eos-rpc-sdk
+composer require block-matrix-network/php-eos-rpc-sdk
 ```
 
 ## Configuration
