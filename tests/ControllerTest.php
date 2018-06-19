@@ -1,11 +1,13 @@
 <?php
 
 use BlockMatrix\EosRpc\Adapter\Http\GuzzleAdapter;
+use BlockMatrix\EosRpc\Adapter\Http\CurlAdapter;
 use BlockMatrix\EosRpc\Adapter\Settings\DotenvAdapter;
 use BlockMatrix\EosRpc\ChainController;
 use BlockMatrix\EosRpc\Exception\HttpException;
 use Dotenv\Dotenv;
 use GuzzleHttp\Client;
+use Curl\Curl;
 use Mockery as m;
 
 class ControllerTest extends PHPUnit_Framework_TestCase
@@ -101,5 +103,20 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $http = m::mock(Client::class);
 
         $api = new ChainController(new DotenvAdapter($settings), new GuzzleAdapter($http));
+    }
+
+    public function testPostWorks()
+    {
+        $settings = $this->getSettingsMock();
+        $http = m::mock(Curl::class)
+            ->shouldReceive('post')
+            ->andReturn(['valid' => 'response'])
+            ->shouldReceive('close')
+            ->getMock();
+
+        $api = new ChainController(new DotenvAdapter($settings), new CurlAdapter($http));
+        $result = $api->getBlock('1337');
+
+        $this->assertJson($result);
     }
 }
