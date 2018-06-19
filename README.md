@@ -161,6 +161,45 @@ $api->getAccount("blockmatrix1");
 }
 ```
 
+### Get Code
+
+Fetch smart contract code
+
+```php
+echo $api->getCode("eosio");
+
+{
+  "account_name": "eosio",
+  "code_hash": "254247a18af399e237f47ea63e7b5970a8f9d6819150efe443d8e711895915ed",
+  "wast": "(module...
+  *snip*
+}
+```
+
+### Get Table Rows
+
+Fetch smart contract data from an account
+
+```php
+echo $api->getTableRows("eosio", "eosio", "producers", 10);
+
+{
+  "rows": [
+    {
+      "owner": "123singapore",
+      "total_votes": "7636484940846242.00000000000000000",
+      "producer_key": "EOS71UbkZzuz55WNBpsEVQzkXrZAJ2XyLoQiEcS9WKwbYambhFxWb",
+      "is_active": 1,
+      "url": "http:\/\/eos.vote",
+      "unpaid_blocks": 0,
+      "last_claim_time": 0,
+      "location": 0
+    },
+    ...
+    *snip*
+}
+```
+
 ## Tests
 
 Project has 100% test coverage, because OCD. 

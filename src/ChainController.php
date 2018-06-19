@@ -92,4 +92,40 @@ class ChainController
             ['account_name' => $name]
         );
     }
+
+    /**
+     * Fetch smart contract code
+     *
+     * string $name Name
+     *
+     * @return string
+     */
+    public function getCode(string $name): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_code'),
+            ['account_name' => $name]
+        );
+    }
+
+    /**
+     * Fetch smart contract data from an account
+     *
+     * string $name Name
+     *
+     * @return string
+     */
+    public function getTableRows(string $scope, string $code, string $table, int $limit = 0): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_table_rows'),
+            [
+                'scope' => $scope,
+                'code' => $code,
+                'table' => $table,
+                'limit' => $limit,
+                'json' => true,
+            ]
+        );
+    }
 }
