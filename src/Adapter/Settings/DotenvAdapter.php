@@ -36,4 +36,12 @@ class DotenvAdapter implements SettingsInterface
     {
         return (string) getenv('RPC_NODE_URL');
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function rpcKeosd(): string
+    {
+        return (string) getenv('RPC_KEOSD_URL');
+    }
 }
