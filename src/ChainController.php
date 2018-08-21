@@ -132,10 +132,27 @@ class ChainController
      *
      * @return string
      */
-    public function getCode(string $name): string
+    public function getCode(string $name, ?bool $code_as_wasm = false): string
     {
         return $this->client->post(
             $this->buildUrl('/chain/get_code'),
+            [
+                'account_name' => $name
+            ] + ($code_as_wasm ? ['code_as_wasm' => $code_as_wasm] : [])
+        );
+    }
+
+    /**
+     * Get raw code and abi
+     *
+     * string $name Name
+     *
+     * @return string
+     */
+    public function getRawCodeAndAbi(string $name): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_raw_code_and_abi'),
             ['account_name' => $name]
         );
     }
