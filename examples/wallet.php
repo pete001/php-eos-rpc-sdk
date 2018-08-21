@@ -5,7 +5,7 @@ require_once '../vendor/autoload.php';
 $walapi = (new \BlockMatrix\EosRpc\WalletFactory)->api();
 
 
-echo $walletPassword = trim($walapi->create('testwallet'), '\"') . PHP_EOL;
+echo ($walletPassword = trim($walapi->create('testwallet'), '\"')) . PHP_EOL;
 echo $walapi->open('testwallet') . PHP_EOL;
 echo $walapi->lock('testwallet') . PHP_EOL;
 echo $walapi->lockAll() . PHP_EOL;
