@@ -280,4 +280,53 @@ class ChainController
             ]
         );
     }
+
+    /**
+     * Get the required keys needed to sign a transaction
+     *
+     * @param string $transaction
+     * @param array  $available_keys
+     *
+     * @return string
+     */
+    public function getRequiredKeys(array $transaction, array $available_keys): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_required_keys'),
+            [
+                'transaction'    => $transaction,
+                'available_keys' => $available_keys,
+            ]
+        );
+    }
+
+    /**
+     * Push a transaction
+     *
+     * @param string $expiration
+     * @param string $ref_block_num
+     * @param string $ref_block_prefix
+     * @param array  $extra An optional array of additional parameters to add
+     *
+     * @return string
+     */
+    public function pushTransaction(string $expiration, string $ref_block_num, string $ref_block_prefix,
+                                    array $extra = []): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/push_transaction'),
+            [
+                'compression'      => 'none',
+                'transaction'      => [
+                    'expiration'   => $expiration,
+                    'ref_block_num' => $ref_block_num,
+                    'ref_block_prefix' => $ref_block_prefix,
+                    'context_free_actions' => [],
+                    'actions'              => $extra['actions'],
+                    'transaction_extensions' => [],
+                    ],
+                'signatures'       => $extra['signatures']
+            ]
+        );
+    }
 }
