@@ -164,7 +164,7 @@ class EosRpc
      * Creates a key pair and returns
      *
      * @param  string $keyType
-     * @param  bool   $noImport
+     * @param  bool   $noImport An optional param to import keys or not
      *
      * @return array  ['publicKey','privateKey']
      */

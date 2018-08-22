@@ -181,7 +181,7 @@ class WalletController
     }
 
     /**
-     * Lists all key pairs of given wallet
+     * Lists all key pairs from the wallet of the given name and password
      *
      * @param  array $args['name','password']
      *
