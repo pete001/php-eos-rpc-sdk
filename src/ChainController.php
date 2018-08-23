@@ -232,8 +232,8 @@ class ChainController
         return $this->client->post(
             $this->buildUrl('/chain/get_producers'),
             [
-                'limit'       => $limit,
-                'json'        => true,
+                'limit' => $limit,
+                'json'  => true
             ] + ($lowerBound ? ['lower_bound' => $lowerBound] : [])
         );
     }
@@ -316,17 +316,25 @@ class ChainController
         return $this->client->post(
             $this->buildUrl('/chain/push_transaction'),
             [
-                'compression'      => 'none',
-                'transaction'      => [
-                    'expiration'   => $expiration,
-                    'ref_block_num' => $ref_block_num,
-                    'ref_block_prefix' => $ref_block_prefix,
-                    'context_free_actions' => [],
-                    'actions'              => $extra['actions'],
+                'compression' => 'none',
+                'transaction' => [
+                    'expiration'             => $expiration,
+                    'ref_block_num'          => $ref_block_num,
+                    'ref_block_prefix'       => $ref_block_prefix,
+                    'context_free_actions'   => [],
+                    'actions'                => $extra['actions'],
                     'transaction_extensions' => [],
-                    ],
-                'signatures'       => $extra['signatures']
+                ],
+                'signatures'  => $extra['signatures']
             ]
+        );
+    }
+
+    public function pushTransactions(array $body): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/push_transactions'),
+            $body
         );
     }
 }
