@@ -54,21 +54,33 @@ class EosRpc
     }
 
     /**
-     * Push an action
+     * Make a transaction with the given actions and return
      *
-     * @param  string $code
-     * @param  string $action
-     * @param  array  $args
-     * @param  array  $authority['actor','permission']
+     * @param  array  $actions
+     *
+     * $actions format:
+     * $actions[0] = [
+     *     'account'       => $code,
+     *     'name'          => $action,
+     *     'authorization' => [
+     *         [
+     *             'actor'         => $authority['actor'],
+     *             'permission'    => $authority['permission']
+     *         ]
+     *     ],
+     *     'data' => $args
+     * ];
      *
      * @return string Transaction ID
      */
-    public function pushAction(string $code, string $action, array $args, array $authority): string
+    public function makeTransaction(array $actions): array
     {
-        // push action $code $action '$args' -p $authority['actor']@$authority['permission']
-
         // abi_json_to_bin
-        $binargs = json_decode($this->chain->abiJsonToBin($code, $action, $args), true)['binargs'];
+        foreach ($actions as $key => $value) {
+            $actions[$key]['data'] = json_decode(
+                $this->chain->abiJsonToBin($value['account'], $value['name'], $value['data']),
+                true)['binargs'];
+        }
 
         // get_info
         $info = json_decode($this->chain->getInfo(), true);
@@ -86,18 +98,6 @@ class EosRpc
         $this->wallet->unlock($this->walletInfo);
 
         // get required keys
-        $actions[0] = [
-            'account'       => $code,
-            'name'          => $action,
-            'authorization' => [
-                [
-                    'actor'         => $authority['actor'],
-                    'permission'    => $authority['permission']
-                ]
-            ],
-            'data' => $binargs,
-        ];
-
         $transaction = [
             'expiration'             => $expiration,
             'ref_block_num'          => $ref_block_num,
@@ -118,15 +118,113 @@ class EosRpc
         // lock wallet
         $this->wallet->lock($this->walletInfo[0]);
 
-        // push transaction
+        // make transaction
+        $transaction = [
+            'compression' => 'none',
+            'transaction' => [
+                'expiration'             => $expiration,
+                'ref_block_num'          => $ref_block_num,
+                'ref_block_prefix'       => $ref_block_prefix,
+                'context_free_actions'   => [],
+                'actions'                => $actions,
+                'transaction_extensions' => [],
+            ],
+            'signatures'  => $signatures
+        ];
+
+        return $transaction;
+    }
+
+    /**
+     * Push a transaction with the given actions
+     *
+     * @param  array  $actions
+     *
+     * $actions format:
+     * $actions[0] = [
+     *     'account'       => $code,
+     *     'name'          => $action,
+     *     'authorization' => [
+     *         [
+     *             'actor'         => $authority['actor'],
+     *             'permission'    => $authority['permission']
+     *         ]
+     *     ],
+     *     'data' => $args
+     * ];
+     *
+     * @return string Transaction ID
+     */
+    public function pushTransaction(array $actions): string
+    {
+        $transaction = $this->makeTransaction($actions);
+
+        $expiration = $transaction['transaction']['expiration'];
+        $ref_block_num = $transaction['transaction']['ref_block_num'];
+        $ref_block_prefix = $transaction['transaction']['ref_block_prefix'];
         $extra = [
-            'actions'    => $actions,
-            'signatures' => $signatures,
+            'actions'    => $transaction['transaction']['actions'],
+            'signatures' => $transaction['signatures']
         ];
 
         return json_decode(
             $this->chain->pushTransaction($expiration, $ref_block_num, $ref_block_prefix, $extra),
             true)['transaction_id'];
+    }
+
+    /**
+     * Push transactions
+     *
+     * @param  array  $transactions
+     *
+     * $transactions format:
+     * $transaction[0] = [
+     *     'compression' => 'none',
+     *     'transaction' => [
+     *         'expiration'             => $expiration,
+     *         'ref_block_num'          => $ref_block_num,
+     *         'ref_block_prefix'       => $ref_block_prefix,
+     *         'context_free_actions'   => [],
+     *         'actions'                => $actions,
+     *         'transaction_extensions' => [],
+     *     ],
+     *     'signatures'  => $signatures
+     * ];
+     *
+     * @return array  Transaction IDs
+     */
+    public function pushTransactions(array $transactions): array
+    {
+        return json_decode(
+            $this->chain->pushTransactions($transactions),
+            true);
+    }
+
+    /**
+     * Push an action
+     *
+     * @param  string $code
+     * @param  string $action
+     * @param  array  $args Json format action arguments
+     * @param  array  $authority['actor','permission']
+     *
+     * @return string Transaction ID
+     */
+    public function pushAction(string $code, string $action, array $args, array $authority): string
+    {
+        $actions[0] = [
+            'account'       => $code,
+            'name'          => $action,
+            'authorization' => [
+                [
+                    'actor'         => $authority['actor'],
+                    'permission'    => $authority['permission']
+                ]
+            ],
+            'data' => $args
+        ];
+
+        return $this->pushTransaction($actions);
     }
 
     /**
