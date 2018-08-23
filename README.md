@@ -162,8 +162,33 @@ echo $api->abiBinToJson("eosio.token", "transfer", "10babbd94888683c10babbd94888
 Get the required keys needed to sign a transaction
 
 ```php
-// TO BE UPDATED in detail
-echo $api->getRequiredKeys($transaction, $available_keys);
+echo $api->getRequiredKeys(
+     [
+         "expiration" => "2018-08-23T05.00.00",
+         "ref_block_num" => 15078,
+         "ref_block_prefix" => 1071971392,
+         "max_net_usage_words" => 0,
+         "delay_sec" => 0,
+         "context_free_actions" => [],
+         "actions" => [
+             [
+                 "account" => "eosio.token",
+                 "name" => "transfer",
+                 "authorization" => [
+                     [
+                         "actor" => "user",
+                         "permission" => "active"
+                     ]
+                 ],
+                 "data" => "00000000007015d6000000005c95b1ca102700000000000004454f53000000000c757365722d3e746573746572"
+             ]
+         ],
+         "transaction_extensions" => []
+     ],
+     [
+         "EOS7ijWCBmoXBi3CgtK7DJxentZZeTkeUnaSDvyro9dq7Sd1C3dC4"
+     ]
+ );
 ```
 
 ### Push Transaction
@@ -171,8 +196,89 @@ echo $api->getRequiredKeys($transaction, $available_keys);
 Push a transaction
 
 ```php
-// TO BE UPDATED in detail
-echo $api->pushTransaction($expiration, $ref_block_num, $ref_block_prefix, $extra);
+echo $api->pushTransaction("2018-08-23T05:29:39", "15780", "90170226",
+    [
+        "actions" => [
+            [
+                "account" => "eosio.token",
+                "name" => "transfer",
+                "authorization" => [
+                    [
+                        "actor" => "user",
+                        "permission" => "active"
+                    ]
+                ],
+                "data" => "00000000007015d6000000005c95b1ca102700000000000004454f53000000000c757365722d3e746573746572"
+            ]
+        ],
+        "signatures" => [
+            "SIG_K1_KaGHyi59BRqfaDUK6424TYEWcUhWxAG7BLCgYC8vwYNgaHgGLpduTUbNQEsfL8xLzboK8W9T2X69bNpqozTQVCbRSNJWFd"
+        ]
+    ]
+);
+```
+
+### Push Transactions
+
+Push transactions
+
+```php
+echo $api->pushTransactions(
+    [
+        [
+            "compression" => "none",
+            "transaction" => [
+                "expiration" => "2018-08-23T06:27:26",
+                "ref_block_num" => 22017,
+                "ref_block_prefix" => 3920123292,
+                "context_free_actions" => [],
+                "actions" => [
+                    [
+                        "account" => "eosio.token",
+                        "name" => "transfer",
+                        "authorization" => [
+                            [
+                                "actor" => "user",
+                                "permission" => "active"
+                            ]
+                        ],
+                        "data" => "00000000007015d6000000005c95b1ca102700000000000004454f53000000000c757365722d3e746573746572"
+                    ]
+                ],
+                "transaction_extensions" => []
+            ],
+            "signatures" => [
+                "SIG_K1_JzN9DnpyhKfjoef3C2TZBTPA5b6ftwuEBnBpvzkueVXThJ34PFFpUFgqyayfXjeLRc15JmZmDiMYAFX99hUgX8vkGAYcnx"
+            ]
+        ],
+        [
+            "compression" => "none",
+            "transaction" => [
+                "expiration" => "2018-08-23T06:27:26",
+                "ref_block_num" => 22017,
+                "ref_block_prefix" => 3920123292,
+                "context_free_actions" => [],
+                "actions" => [
+                    [
+                        "account" => "eosio.token",
+                        "name" => "transfer",
+                        "authorization" => [
+                            [
+                                "actor" => "tester",
+                                "permission" => "active"
+                            ]
+                        ],
+                        "data" => "000000005c95b1ca00000000007015d6881300000000000004454f53000000000c7465737465722d3e75736572"
+                    ]
+                ],
+                "transaction_extensions" => []
+            ],
+            "signatures" => [
+                "SIG_K1_KZ2M4AG59tptdRCpqbwzMQvBv1dce5btJCJiCVVy96fTGepApGXqJAwsi17g8AQdJjUQB4R62PprfdUdRYHGdBqK1z9Sx9"
+            ]
+        ]
+    ]
+);
 ```
 
 ## Wallet APIs
@@ -278,8 +384,34 @@ echo $walapi->setTimeout(60);
 Signs a transaction
 
 ```php
-// TO BE UPDATED in detail
-echo $walapi->signTransaction($txn, $keys, $id);
+echo $walapi->signTransaction(
+    [
+        "expiration" => "2018-08-23T06:35:30",
+        "ref_block_num" => 22985,
+        "ref_block_prefix" => 3016594541,
+        "max_net_usage_workds" => 0,
+        "delay_sec" => 0,
+        "context_free_actions" => [],
+        "actions" => [
+            [
+                "account" => "eosio.token",
+                "name" => "transfer",
+                "authorization" => [
+                    [
+                        "actor" => "user",
+                        "permission" => "active"
+                    ]
+                ],
+                "data" => "00000000007015d6000000005c95b1ca102700000000000004454f53000000000c757365722d3e746573746572"
+            ]
+        ],
+        "transaction_extensions" => []
+    ],
+    [
+        "EOS7ijWCBmoXBi3CgtK7DJxentZZeTkeUnaSDvyro9dq7Sd1C3dC4"
+    ],
+    "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f"
+);
 ```
 
 ## EOS Wrapper APIs
@@ -292,12 +424,112 @@ Need to set wallet name and password
 $eos->setWalletInfo("testwallet", "PW5Jb8RAZP6CBjjMLPser3T8i8k9hZXZkMBJ8kb1p6f6hAg2n68jY");
 ```
 
-### Transfer
+### Push Transaction
 
-Transfers token
+Push a transaction
 
 ```php
-echo $eos->transfer("user", "tester", "1.0000 EOS", "memo");
+echo $eos->pushTransaction(
+    [
+        [
+            "account" => "eosio.token",
+            "name" => "transfer",
+            "authorization" => [
+                [
+                    "actor" => "user",
+                    "permission" => "active"
+                ]
+            ],
+            "data" => [
+                "from" => "user",
+                "to" => "tester",
+                "quantity" => "1.0000 EOS",
+                "memo" => "memo"
+            ]
+        ]
+    ]
+);
+```
+
+### Make Transaction
+
+Make a transaction (useful for pushTransactions)
+
+```php
+$trx = $eos->makeTransaction(
+    [
+        [
+            "account" => "eosio.token",
+            "name" => "transfer",
+            "authorization" => [
+                [
+                    "actor" => "user",
+                    "permission" => "active"
+                ]
+            ],
+            "data" => [
+                "from" => "user",
+                "to" => "tester",
+                "quantity" => "1.0000 EOS",
+                "memo" => "memo"
+            ]
+        ]
+    ]
+);
+```
+
+### Push Transactions
+
+Push transactions
+
+```php
+$trx_ids = $eos->pushTransactions(
+    [
+        $eos->makeTransaction(
+            [
+                [
+                    "account" => "eosio.token",
+                    "name" => "transfer",
+                    "authorization" => [
+                        [
+                            "actor" => "user",
+                            "permission" => "active"
+                        ]
+                    ],
+                    "data" => [
+                        "from" => "user",
+                        "to" => "tester",
+                        "quantity" => "1.0000 EOS",
+                        "memo" => "memo"
+                    ]
+                ]
+            ]
+        ),
+        $eos->makeTransaction(
+            [
+                [
+                    "account" => "eosio.token",
+                    "name" => "transfer",
+                    "authorization" => [
+                        [
+                            "actor" => "tester",
+                            "permission" => "active"
+                        ]
+                    ],
+                    "data" => [
+                        "from" => "tester",
+                        "to" => "user",
+                        "quantity" => "0.5000 EOS",
+                        "memo" => "memo"
+                    ]
+                ]
+            ]
+        )
+    ]
+);
+foreach ($trx_ids as $key => $value) {
+    echo $trx_ids[$key]['transaction_id'] . PHP_EOL;
+}
 ```
 
 ### Push Action
@@ -306,6 +538,14 @@ Push an action
 
 ```php
 echo $eos->pushAction("eosio", "buyram", ["payer"=>"tester","receiver"=>"tester","quant"=>"1.0000 EOS"], ["actor"=>"tester","permission"=>"active"]);
+```
+
+### Transfer
+
+Transfers token
+
+```php
+echo $eos->transfer("user", "tester", "1.0000 EOS", "memo");
 ```
 
 ### Create Key Pair
