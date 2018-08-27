@@ -3,6 +3,7 @@ namespace BlockMatrix\EosRpc;
 
 use BlockMatrix\EosRpc\ChainController;
 use BlockMatrix\EosRpc\WalletController;
+use BlockMatrix\EosRpc\Exception\EosRpcException;
 use DateTimeImmutable;
 use DateTimeZone;
 use DateInterval;
@@ -71,7 +72,8 @@ class EosRpc
      *     'data' => $args
      * ];
      *
-     * @return string Transaction ID
+     * @return array Transaction
+     * @throws \Exception
      */
     public function makeTransaction(array $actions): array
     {
@@ -139,6 +141,7 @@ class EosRpc
      * Push a transaction with the given actions
      *
      * @param  array  $actions
+     * @param  bool   $trxIdOnly
      *
      * $actions format:
      * $actions[0] = [
@@ -153,23 +156,33 @@ class EosRpc
      *     'data' => $args
      * ];
      *
-     * @return string Transaction ID
+     * @return array|string Transaction Result or ID
+     * @throws EosRpcException
      */
-    public function pushTransaction(array $actions): string
+    public function pushTransaction(array $actions, bool $trxIdOnly = true)
     {
-        $transaction = $this->makeTransaction($actions);
+        try {
+            $transaction = $this->makeTransaction($actions);
 
-        $expiration = $transaction['transaction']['expiration'];
-        $ref_block_num = $transaction['transaction']['ref_block_num'];
-        $ref_block_prefix = $transaction['transaction']['ref_block_prefix'];
-        $extra = [
-            'actions'    => $transaction['transaction']['actions'],
-            'signatures' => $transaction['signatures']
-        ];
+            $expiration = $transaction['transaction']['expiration'];
+            $ref_block_num = $transaction['transaction']['ref_block_num'];
+            $ref_block_prefix = $transaction['transaction']['ref_block_prefix'];
+            $extra = [
+                'actions'    => $transaction['transaction']['actions'],
+                'signatures' => $transaction['signatures']
+            ];
 
-        return json_decode(
-            $this->chain->pushTransaction($expiration, $ref_block_num, $ref_block_prefix, $extra),
-            true)['transaction_id'];
+            $result = json_decode(
+                $this->chain->pushTransaction($expiration, $ref_block_num, $ref_block_prefix, $extra),
+                true);
+
+            if (array_key_exists('transaction_id', $result) === false)
+                throw new EosRpcException(json_encode($result));
+
+            return $trxIdOnly ? $result['transaction_id'] : $result;
+        } catch (HttpException $e) {
+            echo $e->getMessage();
+        }
     }
 
     /**
@@ -191,7 +204,7 @@ class EosRpc
      *     'signatures'  => $signatures
      * ];
      *
-     * @return array  Transaction IDs
+     * @return array  Result of transactions
      */
     public function pushTransactions(array $transactions): array
     {
@@ -207,24 +220,30 @@ class EosRpc
      * @param  string $action
      * @param  array  $args Json format action arguments
      * @param  array  $authority['actor','permission']
+     * @param  bool   $trxIdOnly
      *
-     * @return string Transaction ID
+     * @return array|string Transaction Result or ID
+     * @throws EosRpcException
      */
-    public function pushAction(string $code, string $action, array $args, array $authority): string
+    public function pushAction(string $code, string $action, array $args, array $authority, bool $trxIdOnly = true)
     {
-        $actions[0] = [
-            'account'       => $code,
-            'name'          => $action,
-            'authorization' => [
-                [
-                    'actor'         => $authority['actor'],
-                    'permission'    => $authority['permission']
-                ]
-            ],
-            'data' => $args
-        ];
+        try {
+            $actions[0] = [
+                'account'       => $code,
+                'name'          => $action,
+                'authorization' => [
+                    [
+                        'actor'         => $authority['actor'],
+                        'permission'    => $authority['permission']
+                    ]
+                ],
+                'data' => $args
+            ];
 
-        return $this->pushTransaction($actions);
+            return $this->pushTransaction($actions, $trxIdOnly);
+        } catch (EosRpcException $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -235,27 +254,33 @@ class EosRpc
      * @param  string $quantity
      * @param  string $memo
      * @param  string $contract
+     * @param  bool   $trxIdOnly
      *
-     * @return string Transaction ID
+     * @return array|string Transaction Result or ID
+     * @throws EosRpcException
      */
     public function transfer(string $from, string $to, string $quantity, string $memo,
-                             string $contract = 'eosio.token'): string
+                             string $contract = 'eosio.token', bool $trxIdOnly = true)
     {
         // push action $contract transfer '["$from", "$to", "$quantity", "$memo"]'
 
-        $args = [
-            'from'     => $from,
-            'to'       => $to,
-            'quantity' => $quantity,
-            'memo'     => $memo
-        ];
+        try {
+            $args = [
+                'from'     => $from,
+                'to'       => $to,
+                'quantity' => $quantity,
+                'memo'     => $memo
+            ];
 
-        $authority = [
-            'actor'      => $from,
-            'permission' => 'active'
-        ];
+            $authority = [
+                'actor'      => $from,
+                'permission' => 'active'
+            ];
 
-        return $this->pushAction($contract, 'transfer', $args, $authority);
+            return $this->pushAction($contract, 'transfer', $args, $authority, $trxIdOnly);
+        } catch (EosRpcException $e) {
+            throw $e;
+        }
     }
 
     /**
