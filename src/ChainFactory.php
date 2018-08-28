@@ -19,15 +19,20 @@ class ChainFactory
     /**
      * Simple convenience factory which can be overloaded or used with defaults
      *
-     * @param string                 $env
-     * @param SettingsInterface|null $settings
-     * @param HttpInterface|null     $http
+     * @param  string|null            $path
+     * @param  string                 $env
+     * @param  SettingsInterface|null $settings
+     * @param  HttpInterface|null     $http
      *
      * @return ChainController
+     * @throws Exception\SettingsException
+     * @throws Exception\SettingsNotFoundException
+     * @throws \ErrorException
      */
-    public function api(string $env = '.env', SettingsInterface $settings = null, HttpInterface $http = null): ChainController
+    public function api(string $path = null, string $env = '.env', SettingsInterface $settings = null, HttpInterface $http = null): ChainController
     {
-        $settings = $settings ?? new DotenvAdapter(new Dotenv(dirname(__DIR__), $env));
+        $path = $path ?? dirname(__DIR__);
+        $settings = $settings ?? new DotenvAdapter(new Dotenv($path, $env));
         $http = $http ?? new CurlAdapter(new Curl);
 
         return new ChainController(

@@ -16,7 +16,10 @@ class DotenvAdapter implements SettingsInterface
     /**
      * DotenvAdapter constructor
      *
-     * @param Dotenv $client
+     * @param  Dotenv $client
+     * @param  bool $ifLoad
+     * @throws SettingsException
+     * @throws SettingsNotFoundException
      */
     public function __construct(Dotenv $settings)
     {
