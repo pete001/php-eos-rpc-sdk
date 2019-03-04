@@ -80,6 +80,26 @@ class ChainController
     }
 
     /**
+     * Get actions related to an account
+     *
+     * string $account_name Account name to query
+     * int $pos Position in action log
+     * int $offset Offset in action log
+     *
+     * @param  string  $account_name
+     * @param  int  $pos
+     * @param  int  $offset
+     * @return string
+     */
+    public function getActions($account_name, $pos, $offset): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/history/get_actions'),
+            ['account_name' => $account_name, 'pos' => $pos, 'offset' => $offset]
+        );
+    }
+
+    /**
      * Get information related to a block header state
      *
      * mixed $id Block num or id
