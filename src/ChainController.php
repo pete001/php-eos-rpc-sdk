@@ -80,6 +80,26 @@ class ChainController
     }
 
     /**
+     * Get actions related to an account
+     *
+     * string $account_name Account name to query
+     * int $pos Position in action log
+     * int $offset Offset in action log
+     *
+     * @param  string  $account_name
+     * @param  int  $pos
+     * @param  int  $offset
+     * @return string
+     */
+    public function getActions($account_name, $pos, $offset): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/history/get_actions'),
+            ['account_name' => $account_name, 'pos' => $pos, 'offset' => $offset]
+        );
+    }
+
+    /**
      * Get information related to a block header state
      *
      * mixed $id Block num or id
@@ -132,10 +152,27 @@ class ChainController
      *
      * @return string
      */
-    public function getCode(string $name): string
+    public function getCode(string $name, ?bool $code_as_wasm = false): string
     {
         return $this->client->post(
             $this->buildUrl('/chain/get_code'),
+            [
+                'account_name' => $name
+            ] + ($code_as_wasm ? ['code_as_wasm' => $code_as_wasm] : [])
+        );
+    }
+
+    /**
+     * Get raw code and abi
+     *
+     * string $name Name
+     *
+     * @return string
+     */
+    public function getRawCodeAndAbi(string $name): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_raw_code_and_abi'),
             ['account_name' => $name]
         );
     }
@@ -215,8 +252,8 @@ class ChainController
         return $this->client->post(
             $this->buildUrl('/chain/get_producers'),
             [
-                'limit'       => $limit,
-                'json'        => true,
+                'limit' => $limit,
+                'json'  => true
             ] + ($lowerBound ? ['lower_bound' => $lowerBound] : [])
         );
     }
@@ -261,6 +298,63 @@ class ChainController
                 'action'  => $action,
                 'binargs' => $binArgs,
             ]
+        );
+    }
+
+    /**
+     * Get the required keys needed to sign a transaction
+     *
+     * @param string $transaction
+     * @param array  $available_keys
+     *
+     * @return string
+     */
+    public function getRequiredKeys(array $transaction, array $available_keys): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/get_required_keys'),
+            [
+                'transaction'    => $transaction,
+                'available_keys' => $available_keys,
+            ]
+        );
+    }
+
+    /**
+     * Push a transaction
+     *
+     * @param string $expiration
+     * @param string $ref_block_num
+     * @param string $ref_block_prefix
+     * @param array  $extra An optional array of additional parameters to add
+     *
+     * @return string
+     */
+    public function pushTransaction(string $expiration, string $ref_block_num, string $ref_block_prefix,
+                                    array $extra = []): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/push_transaction'),
+            [
+                'compression' => 'none',
+                'transaction' => [
+                    'expiration'             => $expiration,
+                    'ref_block_num'          => $ref_block_num,
+                    'ref_block_prefix'       => $ref_block_prefix,
+                    'context_free_actions'   => [],
+                    'actions'                => $extra['actions'],
+                    'transaction_extensions' => [],
+                ],
+                'signatures'  => $extra['signatures']
+            ]
+        );
+    }
+
+    public function pushTransactions(array $body): string
+    {
+        return $this->client->post(
+            $this->buildUrl('/chain/push_transactions'),
+            $body
         );
     }
 }

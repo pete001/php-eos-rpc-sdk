@@ -50,17 +50,22 @@ class CurlAdapter implements HttpInterface
     /**
      * Perform POST request
      *
+     * mixed $params string or array
+     *
      * @param string $url    The request URL
-     * @param array  $params Additional POST params
+     * @param mixed  $params Additional POST params
      *
      * @throws \Exception For failed requests
      *
      * @return string The POST response
      */
-    public function post(string $url, array $params): string
+    public function post(string $url, $params): string
     {
         try {
-            $this->client->post($url, json_encode($params));
+            if (is_array($params))
+                $this->client->post($url, json_encode($params));
+            else
+                $this->client->post($url, $params);
         } catch (\Throwable $t) {
             throw new HttpException("POST Request failed: {$t->getMessage()}");
         }

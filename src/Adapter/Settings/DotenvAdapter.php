@@ -16,7 +16,10 @@ class DotenvAdapter implements SettingsInterface
     /**
      * DotenvAdapter constructor
      *
-     * @param Dotenv $client
+     * @param  Dotenv $client
+     * @param  bool $ifLoad
+     * @throws SettingsException
+     * @throws SettingsNotFoundException
      */
     public function __construct(Dotenv $settings)
     {
@@ -35,5 +38,13 @@ class DotenvAdapter implements SettingsInterface
     public function rpcNode(): string
     {
         return (string) getenv('RPC_NODE_URL');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rpcKeosd(): string
+    {
+        return (string) getenv('RPC_KEOSD_URL');
     }
 }

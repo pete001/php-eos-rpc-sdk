@@ -16,10 +16,10 @@ interface HttpInterface
     /**
      * POST Request
      *
-     * @param string $url    The request url
-     * @param bool   $verify Whether the verify the secure URL
+     * @param string       $url    The request url
+     * @param string|array $params Post data
      *
      * @return string The request response
      */
-    public function post(string $url, array $params): string;
+    public function post(string $url, $params): string;
 }
