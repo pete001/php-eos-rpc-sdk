@@ -14,7 +14,7 @@
     ],
     "require": {
         "guzzlehttp/guzzle": "~6.0",
-        "vlucas/phpdotenv": "^2.4",
+        "vlucas/phpdotenv": "^4.0",
         "php-curl-class/php-curl-class": "^8.1"
     },
     "require-dev": {

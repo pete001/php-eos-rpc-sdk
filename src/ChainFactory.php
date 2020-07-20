@@ -32,7 +32,7 @@ class ChainFactory
     public function api(string $path = null, string $env = '.env', SettingsInterface $settings = null, HttpInterface $http = null): ChainController
     {
         $path = $path ?? dirname(__DIR__);
-        $settings = $settings ?? new DotenvAdapter(new Dotenv($path, $env));
+        $settings = $settings ?? new DotenvAdapter(Dotenv::createImmutable($path, $env));
         $http = $http ?? new CurlAdapter(new Curl);
 
         return new ChainController(
